@@ -83,6 +83,7 @@ No modules.
 | <a name="input_environment"></a> [environment](#input\_environment) | The environment to deploy the internal service to. | `string` | n/a | yes |
 | <a name="input_environment_variables"></a> [environment\_variables](#input\_environment\_variables) | The environment variables to use for the service. | <pre>list(object({<br/>    name  = string<br/>    value = string<br/>  }))</pre> | `[]` | no |
 | <a name="input_force_new_deployment"></a> [force\_new\_deployment](#input\_force\_new\_deployment) | Whether to force a new deployment when updating the ecs service. | `bool` | `false` | no |
+| <a name="input_health_check_matcher"></a> [health\_check\_matcher](#input\_health\_check\_matcher) | The matcher response code for the health check. i.e. 0, 200, etc... | `number` | `0` | no |
 | <a name="input_health_check_path"></a> [health\_check\_path](#input\_health\_check\_path) | The path for the healthcheck to use. i.e. /grpc.health.v1.Health/Check, /healthcheck, etc... | `string` | `"/grpc.health.v1.Health/Check"` | no |
 | <a name="input_hosted_zone_id"></a> [hosted\_zone\_id](#input\_hosted\_zone\_id) | The Hosted Zone ID being deployed to. | `string` | n/a | yes |
 | <a name="input_https_listener_arn"></a> [https\_listener\_arn](#input\_https\_listener\_arn) | The ARN of the https listener. | `string` | n/a | yes |

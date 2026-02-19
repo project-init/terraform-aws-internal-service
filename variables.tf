@@ -81,6 +81,12 @@ variable "health_check_path" {
   description = "The path for the healthcheck to use. i.e. /grpc.health.v1.Health/Check, /healthcheck, etc..."
 }
 
+variable "health_check_matcher" {
+  default     = 0
+  type        = number
+  description = "The matcher response code for the health check. i.e. 0, 200, etc..."
+}
+
 ########################################################################################################################
 ### ECS Task
 ########################################################################################################################
