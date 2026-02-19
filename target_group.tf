@@ -13,7 +13,7 @@ resource "aws_lb_target_group" "service" {
     interval            = 5
     timeout             = 2
     protocol            = "HTTP"
-    matcher             = 0
+    matcher             = var.health_check_matcher
     unhealthy_threshold = 2
     path                = var.health_check_path
   }
