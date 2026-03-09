@@ -8,6 +8,52 @@ locals {
     { name : "LOG_LEVEL", value : var.log_level },
     { name : "LOG_ADD_SOURCE", value : tostring(var.log_add_source) }
   ])
+
+  main_container = {
+    name        = "main"
+    image       = var.image
+    entryPoint  = []
+    environment = local.task_env_variables
+    secrets     = var.secrets
+    essential   = true
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        "awslogs-group"         = aws_cloudwatch_log_group.log-group.id
+        "awslogs-region"        = "us-east-1"
+        "awslogs-stream-prefix" = "${var.service_name}-${var.environment}"
+      }
+    }
+    portMappings = [
+      {
+        containerPort = var.container_port
+        hostPort      = var.container_port
+        protocol      = "tcp"
+      }
+    ]
+    cpu         = var.cpu
+    memory      = var.memory
+    networkMode = "awsvpc"
+  }
+
+  sidecar_containers = [for s in var.sidecars : {
+    name         = s.name
+    image        = s.image
+    essential    = s.essential
+    environment  = s.environment_variables
+    secrets      = s.secrets
+    portMappings = s.port_mappings
+    cpu          = s.cpu
+    memory       = s.memory
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        "awslogs-group"         = aws_cloudwatch_log_group.log-group.id
+        "awslogs-region"        = "us-east-1"
+        "awslogs-stream-prefix" = "${s.name}-${var.environment}"
+      }
+    }
+  }]
 }
 
 resource "aws_ecs_task_definition" "aws-ecs-task" {
@@ -18,41 +64,12 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
     cpu_architecture        = "ARM64"
   }
 
-  container_definitions = <<DEFINITION
-  [
-    {
-      "name": "main",
-      "image": "${var.image}",
-      "entryPoint": [],
-      "environment": ${jsonencode(local.task_env_variables)},
-      "secrets": ${jsonencode(var.secrets)},
-      "essential": true,
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "${aws_cloudwatch_log_group.log-group.id}",
-          "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "${var.service_name}-${var.environment}"
-        }
-      },
-      "portMappings": [
-        {
-          "containerPort": ${var.container_port},
-          "hostPort": ${var.container_port},
-          "protocol": "tcp"
-        }
-      ],
-      "cpu": ${var.cpu},
-      "memory": ${var.memory},
-      "networkMode": "awsvpc"
-    }
-  ]
-  DEFINITION
+  container_definitions = jsonencode(concat([local.main_container], local.sidecar_containers))
 
   requires_compatibilities = [var.use_ec2 ? "EC2" : "FARGATE"]
   network_mode             = "awsvpc"
-  memory                   = var.memory
-  cpu                      = var.cpu
+  memory                   = sum([var.memory, var.sidecars_memory])
+  cpu                      = sum([var.cpu, var.sidecars_cpu])
   execution_role_arn       = aws_iam_role.service.arn
   task_role_arn            = aws_iam_role.service.arn
 
