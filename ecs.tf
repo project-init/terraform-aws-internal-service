@@ -37,14 +37,14 @@ locals {
   }
 
   sidecar_containers = [for s in var.sidecars : {
-    name        = s.name
-    image       = s.image
-    essential   = s.essential
-    environment = s.environment_variables
-    secrets     = s.secrets
+    name         = s.name
+    image        = s.image
+    essential    = s.essential
+    environment  = s.environment_variables
+    secrets      = s.secrets
     portMappings = s.port_mappings
-    cpu         = s.cpu
-    memory      = s.memory
+    cpu          = s.cpu
+    memory       = s.memory
     logConfiguration = {
       logDriver = "awslogs"
       options = {

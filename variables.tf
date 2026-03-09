@@ -162,21 +162,20 @@ variable "memory" {
   description = "The memory value to give to the ecs task."
 }
 
-variable "sidecars" {                                                                          
-  type = list(object({                                                                         
-    name                  = string                                                             
-    image                 = string                                                             
-    essential             = optional(bool, false)                                              
-    environment_variables = optional(list(object({ name = string, value = string })), [])      
-    secrets               = optional(list(object({ name = string, valueFrom = string })), [])  
-    port_mappings         = optional(list(object({ containerPort = number, hostPort = number,  
-protocol = string })), [])                                                                     
-    cpu                   = optional(number, 0)                                                
-    memory                = optional(number, 0)                                                
-  }))                                                                                          
-  default     = []                                                                             
-  description = "Additional sidecar containers to run alongside the main container in the same 
-task definition."                                                                              
+variable "sidecars" {
+  type = list(object({
+    name                  = string
+    image                 = string
+    essential             = optional(bool, false)
+    environment_variables = optional(list(object({ name = string, value = string })), [])
+    secrets               = optional(list(object({ name = string, valueFrom = string })), [])
+    port_mappings = optional(list(object({ containerPort = number, hostPort = number,
+    protocol = string })), [])
+    cpu    = optional(number, 0)
+    memory = optional(number, 0)
+  }))
+  default     = []
+  description = "Additional sidecar containers to run alongside the main container in the same task definition."
 }
 
 variable "sidecars_cpu" {
