@@ -2,6 +2,9 @@
 opentofu = "1.11.5"
 terraform-docs = "latest"
 
+# Internal
+"go:github.com/project-init/devex/cmd/release" = "v0.7.0"
+
 [env]
 MISE_DISABLE_BACKENDS = "aqua,ubi"
 
@@ -12,11 +15,6 @@ experimental = true
 
 [tasks.format]
 run = "tofu fmt -recursive"
-
-# Release
-
-[tasks.start-release]
-run = "./scripts/git-tag-release.sh"
 
 # Documentation
 
